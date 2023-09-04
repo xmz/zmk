@@ -61,6 +61,7 @@ enum advertising_type {
 
 static struct zmk_ble_profile profiles[ZMK_BLE_PROFILE_COUNT];
 static uint8_t active_profile;
+static uint8_t disconnect_profile = -1;
 
 #define DEVICE_NAME CONFIG_BT_DEVICE_NAME
 #define DEVICE_NAME_LEN (sizeof(DEVICE_NAME) - 1)
@@ -264,6 +265,13 @@ static int ble_save_profile(void) {
 #endif
 }
 
+void disconnect_temp_profile() {
+    if (disconnect_profile > -1) {
+        zmk_ble_prof_disconnect(disconnect_profile);
+        disconnect_profile = -1;
+    }
+}
+
 int zmk_ble_prof_select(uint8_t index) {
     if (index >= ZMK_BLE_PROFILE_COUNT) {
         return -ERANGE;
@@ -278,6 +286,8 @@ int zmk_ble_prof_select(uint8_t index) {
     ble_save_profile();
 
     update_advertising();
+
+    disconnect_temp_profile();
 
     raise_profile_changed_event();
 
@@ -294,6 +304,12 @@ int zmk_ble_prof_prev(void) {
     return zmk_ble_prof_select((active_profile + ZMK_BLE_PROFILE_COUNT - 1) %
                                ZMK_BLE_PROFILE_COUNT);
 };
+
+int zmk_ble_prof_select_temp(uint8_t index) {
+    uint8_t result = zmk_ble_prof_select(index);
+    disconnect_profile = index;
+    return result;
+}
 
 int zmk_ble_prof_disconnect(uint8_t index) {
     if (index >= ZMK_BLE_PROFILE_COUNT)
