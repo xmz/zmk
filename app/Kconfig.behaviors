@@ -17,6 +17,11 @@ config ZMK_BEHAVIOR_SOFT_OFF
     default y
     depends on DT_HAS_ZMK_BEHAVIOR_SOFT_OFF_ENABLED && ZMK_PM_SOFT_OFF
 
+DT_COMPAT_ZMK_BEHAVIOR_TRI_STATE := zmk,behavior-tri-state
+config ZMK_BEHAVIOR_TRI_STATE
+    bool
+    default $(dt_compat_enabled,$(DT_COMPAT_ZMK_BEHAVIOR_TRI_STATE))
+
 config ZMK_BEHAVIOR_SENSOR_ROTATE_COMMON
     bool
 
