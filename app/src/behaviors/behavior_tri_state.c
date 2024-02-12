@@ -70,7 +70,8 @@ void trigger_end_behavior(struct active_tri_state *si) {
 }
 
 void behavior_tri_state_timer_handler(struct k_work *item) {
-    struct active_tri_state *tri_state = CONTAINER_OF(item, struct active_tri_state, release_timer);
+    struct k_work_delayable *d_work = k_work_delayable_from_work(item);
+    struct active_tri_state *tri_state = CONTAINER_OF(d_work, struct active_tri_state, release_timer);
     if (!tri_state->is_active || tri_state->timer_cancelled || tri_state->is_pressed) {
         return;
     }
